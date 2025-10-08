@@ -20,7 +20,10 @@ public class OrderProcessingFacade {
         ));
     }
 
-    // Метод для обработки заказов
+    /** Метод для обработки заказов.
+     * Обрабатывает все заказы из списка, используя соответствующие обработчики,
+     * для каждого заказа выбирается обработчик на основе его статуса.
+     */
     public void handleOrders() {
         for (Order order : orders) {
             OrderHandler handler = handlerMap.get(order.getStatus());
@@ -32,6 +35,11 @@ public class OrderProcessingFacade {
 }
 
 interface OrderHandler {
+    /**
+     * Обрабатывает заказ.
+     *
+     * @param order обрабатываемый заказ
+     */
     void handle(Order order);
 }
 
@@ -48,6 +56,12 @@ class ConfirmedOrderHandler implements OrderHandler {
         this.invoiceService = invoiceService;
     }
 
+    /**
+     * Обрабатывает подтверждённый заказ: отправляет email-подтверждение,
+     * обновляет запасы на складе и генерирует счёт.
+     *
+     * @param order обрабатываемый заказ
+     */
     public void handle(Order order) {
         emailService.sendConfirmationEmail(order);
         inventoryService.updateInventory(order);
@@ -69,6 +83,11 @@ class ShippedOrderHandler implements OrderHandler {
 
 // Класс для отправки подтверждения по электронной почте
 class EmailConfirmationService {
+    /**
+     * Отправляет email-подтверждение для указанного заказа.
+     *
+     * @param order заказ, для которого отправляется подтверждение
+     */
     public void sendConfirmationEmail(Order order) {
         System.out.println("Sending confirmation email for order #" + order.getId());
     }
@@ -76,6 +95,11 @@ class EmailConfirmationService {
 
 // Класс для обновления запасов на складе
 class InventoryUpdateService {
+    /**
+     * Обновляет запасы на складе в соответствии с указанным заказом.
+     *
+     * @param order заказ, на основе которого обновляются запасы
+     */
     public void updateInventory(Order order) {
         System.out.println("Updating inventory for order #" + order.getId());
     }
@@ -83,6 +107,11 @@ class InventoryUpdateService {
 
 // Класс для генерации счета
 class InvoiceGenerationService {
+    /**
+     * Генерирует счёт для указанного заказа.
+     *
+     * @param order заказ, на основе которого обновляются запасы
+     */
     public void generateInvoice(Order order) {
         System.out.println("Generating invoice for order #" + order.getId());
     }
@@ -90,6 +119,11 @@ class InvoiceGenerationService {
 
 // Класс для обновления статуса доставки
 class ShippingStatusUpdateService {
+    /**
+     * Генерирует счёт для указанного заказа.
+     *
+     * @param order заказ, на основе которого обновляются запасы
+     */
     public void updateShippingStatus(Order order) {
         System.out.println("Updating shipping status for order #" + order.getId());
     }

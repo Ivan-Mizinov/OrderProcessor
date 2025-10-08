@@ -5,7 +5,7 @@ public class Main {
         List<Order> testOrders = List.of(
                 new Order(1, "confirmed"),
                 new Order(2, "shipped"),
-                new Order(3, "pending"),
+                new Order(3, "pending"),    // для проверки, что этот запрос про игнорируется
                 new Order(4, "confirmed"),
                 new Order(5, "shipped")
         );
