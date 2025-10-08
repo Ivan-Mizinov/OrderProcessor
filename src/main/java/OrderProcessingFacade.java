@@ -1,31 +1,69 @@
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderProcessingFacade {
+    private final Map<String, OrderHandler> handlerMap;
     private final List<Order> orders;
-    private final EmailConfirmationService emailService;
-    private final InventoryUpdateService inventoryService;
-    private final InvoiceGenerationService invoiceService;
-    private final ShippingStatusUpdateService shippingService;
 
     public OrderProcessingFacade(List<Order> orders) {
         this.orders = orders;
-        this.emailService = new EmailConfirmationService();
-        this.inventoryService = new InventoryUpdateService();
-        this.invoiceService = new InvoiceGenerationService();
-        this.shippingService = new ShippingStatusUpdateService();
+        this.handlerMap = new HashMap<>();
+        // Инициализация мапы обработчиков
+        handlerMap.put("confirmed", new ConfirmedOrderHandler(
+                new EmailConfirmationService(),
+                new InventoryUpdateService(),
+                new InvoiceGenerationService()
+        ));
+        handlerMap.put("shipped", new ShippedOrderHandler(
+                new ShippingStatusUpdateService()
+        ));
     }
 
     // Метод для обработки заказов
     public void handleOrders() {
         for (Order order : orders) {
-            if (order.getStatus().equals("confirmed")) {
-                emailService.sendConfirmationEmail(order);
-                inventoryService.updateInventory(order);
-                invoiceService.generateInvoice(order);
-            } else if (order.getStatus().equals("shipped")) {
-                shippingService.updateShippingStatus(order);
+            OrderHandler handler = handlerMap.get(order.getStatus());
+            if (handler != null) {
+                handler.handle(order);
             }
         }
+    }
+}
+
+interface OrderHandler {
+    void handle(Order order);
+}
+
+class ConfirmedOrderHandler implements OrderHandler {
+    private final EmailConfirmationService emailService;
+    private final InventoryUpdateService inventoryService;
+    private final InvoiceGenerationService invoiceService;
+
+    public ConfirmedOrderHandler(EmailConfirmationService emailService,
+                                 InventoryUpdateService inventoryService,
+                                 InvoiceGenerationService invoiceService) {
+        this.emailService = emailService;
+        this.inventoryService = inventoryService;
+        this.invoiceService = invoiceService;
+    }
+
+    public void handle(Order order) {
+        emailService.sendConfirmationEmail(order);
+        inventoryService.updateInventory(order);
+        invoiceService.generateInvoice(order);
+    }
+}
+
+class ShippedOrderHandler implements OrderHandler {
+    private final ShippingStatusUpdateService shippingService;
+
+    public ShippedOrderHandler(ShippingStatusUpdateService shippingService) {
+        this.shippingService = shippingService;
+    }
+
+    public void handle(Order order) {
+        shippingService.updateShippingStatus(order);
     }
 }
 
