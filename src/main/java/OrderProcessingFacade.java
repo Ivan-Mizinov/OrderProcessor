@@ -1,50 +1,59 @@
 import java.util.List;
 
 public class OrderProcessingFacade {
-    private List<Order> orders;
-    private OrderEmailSender emailSender;
+    private final List<Order> orders;
+    private final EmailConfirmationService emailService;
+    private final InventoryUpdateService inventoryService;
+    private final InvoiceGenerationService invoiceService;
+    private final ShippingStatusUpdateService shippingService;
 
     public OrderProcessingFacade(List<Order> orders) {
         this.orders = orders;
-        this.emailSender = new OrderEmailSender();
+        this.emailService = new EmailConfirmationService();
+        this.inventoryService = new InventoryUpdateService();
+        this.invoiceService = new InvoiceGenerationService();
+        this.shippingService = new ShippingStatusUpdateService();
     }
 
     // Метод для обработки заказов
     public void handleOrders() {
         for (Order order : orders) {
             if (order.getStatus().equals("confirmed")) {
-                emailSender.sendConfirmationEmail(order);
-                updateInventory(order);
-                generateInvoice(order);
+                emailService.sendConfirmationEmail(order);
+                inventoryService.updateInventory(order);
+                invoiceService.generateInvoice(order);
             } else if (order.getStatus().equals("shipped")) {
-                updateShippingStatus(order);
+                shippingService.updateShippingStatus(order);
             }
         }
-    }
-
-    // Метод для обновления запасов на складе
-    private void updateInventory(Order order) {
-        System.out.println("Updating inventory for order #"
-                + order.getId());
-    }
-
-    // Метод для генерации счета
-    private void generateInvoice(Order order) {
-        System.out.println("Generating invoice for order #"
-                + order.getId());
-    }
-
-    // Метод для обновления статуса доставки
-    private void updateShippingStatus(Order order) {
-        System.out.println("Updating shipping status for order #"
-                + order.getId());
     }
 }
 
 // Класс для отправки подтверждения по электронной почте
-class OrderEmailSender {
+class EmailConfirmationService {
     public void sendConfirmationEmail(Order order) {
         System.out.println("Sending confirmation email for order #" + order.getId());
+    }
+}
+
+// Класс для обновления запасов на складе
+class InventoryUpdateService {
+    public void updateInventory(Order order) {
+        System.out.println("Updating inventory for order #" + order.getId());
+    }
+}
+
+// Класс для генерации счета
+class InvoiceGenerationService {
+    public void generateInvoice(Order order) {
+        System.out.println("Generating invoice for order #" + order.getId());
+    }
+}
+
+// Класс для обновления статуса доставки
+class ShippingStatusUpdateService {
+    public void updateShippingStatus(Order order) {
+        System.out.println("Updating shipping status for order #" + order.getId());
     }
 }
 
