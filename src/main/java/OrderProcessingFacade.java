@@ -1,29 +1,25 @@
 import java.util.List;
 
-public class OrderProcessor {
+public class OrderProcessingFacade {
     private List<Order> orders;
+    private OrderEmailSender emailSender;
 
-    public OrderProcessor(List<Order> orders) {
+    public OrderProcessingFacade(List<Order> orders) {
         this.orders = orders;
+        this.emailSender = new OrderEmailSender();
     }
 
     // Метод для обработки заказов
-    public void processOrders() {
+    public void handleOrders() {
         for (Order order : orders) {
             if (order.getStatus().equals("confirmed")) {
-                sendConfirmationEmail(order);
+                emailSender.sendConfirmationEmail(order);
                 updateInventory(order);
                 generateInvoice(order);
             } else if (order.getStatus().equals("shipped")) {
                 updateShippingStatus(order);
             }
         }
-    }
-
-    // Метод для отправки подтверждения по электронной почте
-    private void sendConfirmationEmail(Order order) {
-        System.out.println("Sending confirmation email for order #"
-                + order.getId());
     }
 
     // Метод для обновления запасов на складе
@@ -42,6 +38,13 @@ public class OrderProcessor {
     private void updateShippingStatus(Order order) {
         System.out.println("Updating shipping status for order #"
                 + order.getId());
+    }
+}
+
+// Класс для отправки подтверждения по электронной почте
+class OrderEmailSender {
+    public void sendConfirmationEmail(Order order) {
+        System.out.println("Sending confirmation email for order #" + order.getId());
     }
 }
 

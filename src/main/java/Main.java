@@ -10,10 +10,10 @@ public class Main {
                 new Order(5, "shipped")
         );
 
-        OrderProcessor processor = new OrderProcessor(testOrders);
+        OrderProcessingFacade processor = new OrderProcessingFacade(testOrders);
 
         System.out.println("Начинаем обработку заказов...\n");
-        processor.processOrders();
+        processor.handleOrders();
         System.out.println("\nОбработка заказов завершена.");
     }
 }
